@@ -1,0 +1,15 @@
+{
+  "name": "bitcore-workshop-service",
+  "version": "1.0.0",
+  "description": "A Bitcore service for the Bitcoin Atlanta Meetup",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bitcore-lib": "^0.13.7",
+    "ejs": "^2.3.4"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "workshop-service",
+  "dependencies": {
+    "bitcore-lib": "^0.13.7",
+    "jquery": "~2.1.4",
+    "jquery-qrcode": "*"
+  }
+}
