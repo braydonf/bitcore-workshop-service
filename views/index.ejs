@@ -26,19 +26,46 @@ h2 {
   margin-top:40px;
   font-size:48px;
 }
+#recent {
+}
+#recent > li {
+  margin-bottom:20px;
+}
 </style>
 <script language="javascript">
   $(document).ready(function() {
     var bitcore = require('bitcore-lib');
     var socket = io('http://localhost:3001');
     var hashes = {};
-    socket.on('address/balance', function(address, balance, block) {
-      $('#balance').text(balance / 1e8+ 'BTC');
-    });
+    function getHistory() {
+      $.get("/insight-api/txs/?address=<%- receivingAddress %>", function(data) {
+        var recent = $("#recent");
+        recent.empty();
+        for (var i = 0; i < data.txs.length; i++) {
+          var tx = data.txs[i];
+          var txelm = $("<li>" + tx.txid + "</li>");
+          var outelm = $("<ul></ul>");
+          for (var j = 0; j < tx.vout.length; j++) {
+            var script = bitcore.Script(tx.vout[j].scriptPubKey.hex);
+            var dataString = '';
+            if (script.isDataOut()) {
+              var scriptData = script.getData();
+              dataString = " - " + scriptData.toString("ascii");
+            }
+            outelm.append($("<li>" + tx.vout[j].value + dataString + "</li>"));
+          }
+          txelm.append(outelm);
+          recent.append(txelm);
+        }
+      });
+    }
+    getHistory();
     socket.on('address/transaction', function(txInfo) {
+      getHistory();
       var tx = bitcore.Transaction(txInfo.tx);
       var hash = tx.hash;
       if (!hashes[hash]) {
+        hashes[tx.hash] = true;
         $('body').css('background-color', '#d7eaa2');
         setTimeout(function() {
           $('body').css('background-color', '#fff');
@@ -46,9 +73,8 @@ h2 {
         $('#coins')[0].play();
       }
     });
-    socket.emit('subscribe', 'address/balance', ['<%- receivingAddress %>']);
     socket.emit('subscribe', 'address/transaction', ['<%- receivingAddress %>']);
-    $('#qrcode').qrcode('bitcoin:<%- receivingAddress %>?amount=0.01');
+    //$('#qrcode').qrcode('bitcoin:<%- receivingAddress %>?amount=0.01');
   });
 </script>
 </head>
@@ -56,7 +82,9 @@ h2 {
 <body>
   <h1><%- receivingAddress %></h1>
   <div id="qrcode"></div>
-  <div id="balance"></div>
   <audio id="coins" src="static/coins.wav"></audio>
+  <h3>Recent Transactions</h3>
+  <ul id="recent">
+  </ul>
 </body>
 </html>
