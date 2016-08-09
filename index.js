@@ -11,7 +11,7 @@ function Workshop(options) {
   this.receivingAddress = options.receivingAddress;
 }
 
-Workshop.dependencies = ['bitcoind', 'db', 'address', 'web'];
+Workshop.dependencies = ['bitcoind', 'web'];
 
 Workshop.prototype.getServiceURL = function() {
   var url = this.node.https ? 'https://' : 'http://';
